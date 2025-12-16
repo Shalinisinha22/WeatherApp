@@ -19,7 +19,8 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.shalinisinha21.weatherapp"
     },
     "web": {
       "output": "static",
@@ -43,6 +44,13 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "8bafa5bd-ae6f-4f56-8514-0ee6b2715eaf"
+      }
+    },
+    "owner": "shalinisinha21"
   }
 }

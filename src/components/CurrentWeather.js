@@ -1,11 +1,12 @@
-import React, { useEffect, useRef } from "react";
-import { View, Text, Image, StyleSheet, Animated } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useEffect, useRef, useState } from "react";
+import { Animated, Image, StyleSheet, Text, View } from "react-native";
 
 // data: OpenWeatherMap "weather" response
 export default function CurrentWeather({ data }) {
   const translateY = useRef(new Animated.Value(20)).current;
   const opacity = useRef(new Animated.Value(0)).current;
+  const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
     if (!data) return;
@@ -29,6 +30,39 @@ export default function CurrentWeather({ data }) {
   const main = data.weather?.[0]?.main;
   const description = data.weather?.[0]?.description;
 
+  // Get icon component based on weather condition
+  const getWeatherIcon = () => {
+    if (!imageError && icon) {
+      return (
+        <Image
+          style={styles.icon}
+          source={{ uri: `https://openweathermap.org/img/wn/${icon}@4x.png` }}
+          onError={() => setImageError(true)}
+        />
+      );
+    }
+
+    switch (main) {
+      case "Clear":
+        return <Ionicons name="sunny" size={80} color="#fbbf24" />;
+      case "Clouds":
+        return <Ionicons name="cloud" size={80} color="#cbd5e1" />;
+      case "Rain":
+      case "Drizzle":
+        return <Ionicons name="rainy" size={80} color="#60a5fa" />;
+      case "Thunderstorm":
+        return <Ionicons name="thunderstorm" size={80} color="#818cf8" />;
+      case "Snow":
+        return <Ionicons name="snow" size={80} color="#f0f9ff" />;
+      case "Mist":
+      case "Smoke":
+      case "Haze":
+        return <Ionicons name="water" size={80} color="#94a3b8" />;
+      default:
+        return <Ionicons name="cloud-circle" size={80} color="#9ca3af" />;
+    }
+  };
+
   return (
     <Animated.View
       style={[
@@ -41,20 +75,9 @@ export default function CurrentWeather({ data }) {
     >
       <Text style={styles.city}>{data.name}</Text>
       <Text style={styles.region}>{data.sys?.country}</Text>
-      {main === "Clear" ? (
-        <View style={styles.iconWrapper}>
-          <Ionicons name="sunny" size={64} color="#fbbf24" />
-        </View>
-      ) : (
-        icon && (
-          <View style={styles.iconWrapper}>
-            <Image
-              style={styles.icon}
-              source={{ uri: `https://openweathermap.org/img/wn/${icon}@4x.png` }}
-            />
-          </View>
-        )
-      )}
+      <View style={styles.iconWrapper}>
+        {getWeatherIcon()}
+      </View>
       <Text style={styles.temp}>{Math.round(data.main?.temp)}°C</Text>
       <Text style={styles.condition}>{description}</Text>
     </Animated.View>
